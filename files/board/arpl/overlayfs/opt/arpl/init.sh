@@ -21,13 +21,13 @@ if [ $NUM_PARTITIONS -lt 3 ]; then
   die "Loader disk not found!"
 fi
 
-while true; do
-  [ ${CNT} -eq 0 ] && break
-  SYSTEM_DISK="`blkid | grep 'LABEL="System"' | cut -d3 -f1`"
-  [ -n "${SYSTEM_DISK}" ] && break
-  CNT=$((${CNT}-1))
-  sleep 1
-done
+# while true; do
+#   [ ${CNT} -eq 0 ] && break
+#   SYSTEM_DISK="`blkid | grep 'LABEL="System"' | cut -d3 -f1`"
+#   [ -n "${SYSTEM_DISK}" ] && break
+#   CNT=$((${CNT}-1))
+#   sleep 1
+# done
 
 # Shows title
 clear
@@ -41,6 +41,8 @@ printf "\033[1;44m%*s\033[0m\n" $COLUMNS ""
 fsck.vfat -aw ${LOADER_DISK}1 >/dev/null 2>&1 || true
 fsck.ext2 -p ${LOADER_DISK}2 >/dev/null 2>&1 || true
 fsck.ext2 -p ${LOADER_DISK}3 >/dev/null 2>&1 || true
+fsck.ext2 -p ${LOADER_DISK}4 >/dev/null 2>&1 || true
+
 # Make folders to mount partitions
 mkdir -p ${BOOTLOADER_PATH}
 mkdir -p ${SLPART_PATH}
@@ -139,13 +141,14 @@ fi
 echo ")"
 
 # Check if partition 3 occupies all free space, resize if needed
-SYSTEM_DEVICE_NAME=`echo ${SYSTEM_DISK} | sed 's|/dev/||'`
-SIZEOFDISK=`cat /sys/block/${SYSTEM_DEVICE_NAME}/size`
-ENDSECTOR=$((`fdisk -l ${SYSTEM_DISK} | awk '/'${SYSTEM_DEVICE_NAME}4'/{print$3}'`+1))
+LOADER_DEVICE_NAME=`echo ${LOADER_DISK} | sed 's|/dev/||'`
+echo ${LOADER_DEVICE_NAME}
+SIZEOFDISK=`cat /sys/block/${LOADER_DEVICE_NAME}/size`
+ENDSECTOR=$((`fdisk -l ${LOADER_DISK} | awk '/'${LOADER_DEVICE_NAME}4'/{print$3}'`+1))
 if [ ${SIZEOFDISK} -ne ${ENDSECTOR} ]; then
-  echo -e "\033[1;36mResizing ${SYSTEM_DISK}4\033[0m"
-  echo -e "d\n\nn\n\n\n\n\nn\nw" | fdisk "${SYSTEM_DISK}" >"${LOG_FILE}" 2>&1 || dieLog
-  resize2fs ${SYSTEM_DISK}4 >"${LOG_FILE}" 2>&1 || dieLog
+  echo -e "\033[1;36mResizing ${LOADER_DISK}4\033[0m"
+  echo -e "d\n\nn\n\n\n\n\nn\nw" | fdisk "${LOADER_DISK}" >"${LOG_FILE}" 2>&1 || dieLog
+  resize2fs ${LOADER_DISK}4 >"${LOG_FILE}" 2>&1 || dieLog
 fi
 
 # Load keymap name
