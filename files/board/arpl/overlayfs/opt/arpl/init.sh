@@ -46,10 +46,13 @@ mkdir -p ${BOOTLOADER_PATH}
 mkdir -p ${SLPART_PATH}
 mkdir -p ${CACHE_PATH}
 mkdir -p ${DSMROOT_PATH}
+mkdir -p ${SYSTEM_PATH}
 # Mount the partitions
 mount ${LOADER_DISK}1 ${BOOTLOADER_PATH} || die "Can't mount ${BOOTLOADER_PATH}"
 mount ${LOADER_DISK}2 ${SLPART_PATH}     || die "Can't mount ${SLPART_PATH}"
 mount ${LOADER_DISK}3 ${CACHE_PATH}      || die "Can't mount ${CACHE_PATH}"
+mount ${LOADER_DISK}4 ${SYSTEM_PATH}      || die "Can't mount ${SYSTEM_PATH}"
+
 
 # Move/link SSH machine keys to/from cache volume
 [ ! -d "${CACHE_PATH}/ssh" ] && cp -R "/etc/ssh" "${CACHE_PATH}/ssh"

@@ -18,6 +18,7 @@ export EDITOR="/bin/nano"
 export BOOTLOADER_PATH="/mnt/p1"
 export SLPART_PATH="/mnt/p2"  # Synologic partition
 export CACHE_PATH="/mnt/p3"
+export SYSTEM_PATH="/mnt/p4"
 export DSMROOT_PATH="/mnt/dsmroot"
 export PATH="${PATH}:/opt/arpl"
 
